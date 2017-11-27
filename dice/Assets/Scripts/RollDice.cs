@@ -41,6 +41,7 @@ public class RollDice : MonoBehaviour {
         Vector3 force = new Vector3((viewPos.x - 0.5f) * speed, (viewPos.y - 0.5f)*speed, speed);
         //Debug.Log(force);
         die.GetComponent<Rigidbody>().AddForce(force);
+        die.GetComponent<Rigidbody>().angularVelocity = new Vector3(Random.Range(5, 10), 0, 0);
         die.transform.position = releasePos.position;
         die.transform.rotation = Random.rotation;
         diceObjs.Add(die);
