@@ -6,7 +6,7 @@ public class DiceD6_coeff : DiceValue {
 
     public override int GetDieValue()
     {
-        return -die.value/2;
+        return -die.value;
     }
 
     public override int GetMaxValue()

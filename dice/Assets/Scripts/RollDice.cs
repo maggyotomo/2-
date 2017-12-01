@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class RollDice : MonoBehaviour {
@@ -8,17 +9,21 @@ public class RollDice : MonoBehaviour {
     public List<GameObject> dice;//投げられるダイスの種類
     public Transform releasePos;
     public float speed = 100;
+
     public int totalValue = 0;//今の出目合計
-    private int diceValue = 0;
-    private int coeff = 1;
+    private int diceValue = 0;//各ダイスの出目
+    public int totalBaseValue = 0;//数ダイス合計
+    public int coeff = 1;//倍率合計
 
     private List<int> rollList;//ダイスの投げる順
     private int rollIndex;//何個投げたか
     private bool allStoped;//静止判定用
     private List<GameObject> diceObjs = new List<GameObject>();//場にあるダイス
 
-    private int check_456 = 12;
-    private int check_coeff = 50;
+    public int check_456 = 12;//456目標値
+    private int check_coeff = 50;//倍ダイス目標値
+
+    public ValueText valTxt;
 
 	// Use this for initialization
 	void Start () {
@@ -26,6 +31,9 @@ public class RollDice : MonoBehaviour {
         rollList = new List<int> { 0, 0 };//通常ダイス2個
         rollIndex = 0;
         allStoped = false;
+
+        valTxt.issue1 = check_456;
+        valTxt.issue2 = check_coeff;
 	}
 	
 	// Update is called once per frame
@@ -74,6 +82,7 @@ public class RollDice : MonoBehaviour {
             if (!AddSpecialDice())
             {
                 rollList.Add(0);
+                valTxt.ShowMessage("add d6");
             }
             
 
@@ -135,6 +144,7 @@ public class RollDice : MonoBehaviour {
         if (totalValue % 10 == 0)
         {
             rollList.Add(1);
+            valTxt.ShowMessage("add d10");
             rolling = true;
         }
         if (totalValue >= check_456)
@@ -142,16 +152,28 @@ public class RollDice : MonoBehaviour {
             rollList.Add(2);
             check_456 = GetMaxTotalValue();
             rolling = true;
-            Debug.Log("check_456=" + check_456);
+            valTxt.ShowMessage("add d6_456");
+            valTxt.issue1 = check_456;
         }
         if(totalValue >= check_coeff)
         {
             rollList.Add(3);
-            check_coeff = 10 * check_coeff;
+            check_coeff += 50 *rollList.Count(n=>n==3)*3;
+            valTxt.ShowMessage("add d6_x(+n)");
             rolling = true;
+            valTxt.issue2 = check_coeff;
         }
 
         return rolling;
         
+    }
+    public int GetDiceCount()
+    {
+        return diceObjs.Count;
+
+    }
+    public int GetTotalDiceCount()
+    {
+        return rollList.Count;
     }
 }
