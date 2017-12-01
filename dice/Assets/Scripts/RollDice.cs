@@ -6,29 +6,48 @@ public class RollDice : MonoBehaviour {
     public GameObject dice;
     public Transform releasePos;
     public float speed = 100;
+    public int maxDice = 10;
     public int totalValue = 0;
+    public int totalDice = 0;
+
     private int diceValue = 0;
     private List<GameObject> diceObjs = new List<GameObject>();
 
 	// Use this for initialization
 	void Start () {
         diceObjs.AddRange(GameObject.FindGameObjectsWithTag("Dice"));
+        totalDice = diceObjs.Count;
 	}
 	
 	// Update is called once per frame
 	void Update () {
+        
         if (Input.GetButtonUp("Fire1"))
         {
-            RollDie();
+            if(totalDice < maxDice)
+            {
+                RollDie();
+
+            }
+            else
+            {
+                foreach(GameObject obj in diceObjs)
+                {
+                    StartCoroutine(LateDestroy(0.5f, obj));
+                }
+            }
+            
+            
         }
         totalValue = 0;
+        int zdice = 0;
         foreach(GameObject diceObj in diceObjs)
         {
             diceValue = diceObj.GetComponent<DiceValue>().value;
             totalValue += diceValue;
-            
+            if (diceValue == 0) zdice++;
         }
-        Debug.Log(totalValue);
+        Debug.Log(zdice);
 
 		
 	}
@@ -45,5 +64,14 @@ public class RollDice : MonoBehaviour {
         die.transform.position = releasePos.position;
         die.transform.rotation = Random.rotation;
         diceObjs.Add(die);
+        totalDice++;
+    }
+
+    IEnumerator LateDestroy(float t,GameObject obj)
+    {
+        yield return new WaitForSeconds(t);
+        Destroy(obj);
+        diceObjs.Clear();
+        totalDice = 0;
     }
 }
