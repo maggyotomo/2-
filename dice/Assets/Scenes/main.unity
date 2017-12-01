@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657874, g: 0.49641252, b: 0.574817, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657868, g: 0.49641263, b: 0.57481706, a: 1}
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
@@ -139,7 +139,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2bb7548aa91acb94fbd820ccf5cbd894, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dice: {fileID: 1792129356087386, guid: da296d40537e19a4da3cab40e8545d66, type: 2}
+  dice:
+  - {fileID: 1792129356087386, guid: da296d40537e19a4da3cab40e8545d66, type: 2}
+  - {fileID: 1578307655777784, guid: 14c4c834a3972a043855257e3cd919e4, type: 2}
+  - {fileID: 1741143138129982, guid: e856a3b7909bdfc4fa81e6da53074eec, type: 2}
+  - {fileID: 1758937381761594, guid: 3b0ddfecdd250b742bae3e31073ede79, type: 2}
   releasePos: {fileID: 1705023926}
   speed: 2500
   maxDice: 10
