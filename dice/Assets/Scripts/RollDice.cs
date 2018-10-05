@@ -11,7 +11,7 @@ public class RollDice : MonoBehaviour {
     public float speed = 100;
 
     public int totalValue = 0;//今の出目合計
-    private int diceValue = 0;//各ダイスの出目
+    private DiceValue diceValue;//各ダイスの出目情報
     public int totalBaseValue = 0;//数ダイス合計
     public int coeff = 1;//倍率合計
 
@@ -20,15 +20,19 @@ public class RollDice : MonoBehaviour {
     private bool allStoped;//静止判定用
     private List<GameObject> diceObjs = new List<GameObject>();//場にあるダイス
 
+    private List<GameObject> stopDice = new List<GameObject>();
     public int check_456 = 12;//456目標値
     private int check_coeff = 50;//倍ダイス目標値
 
     public ValueText valTxt;
 
+    public DicePointManager dpm;
+
 	// Use this for initialization
 	void Start () {
+        dpm = GameObject.Find("GameManager").GetComponent<DicePointManager>();
         //diceObjs.AddRange(GameObject.FindGameObjectsWithTag("Dice"));
-        rollList = new List<int> { 0, 0 };//通常ダイス2個
+        rollList = new List<int> { 1,1};//通常ダイス2個
         rollIndex = 0;
         allStoped = false;
 
@@ -40,74 +44,39 @@ public class RollDice : MonoBehaviour {
 	void Update () {
         if (Input.GetButtonUp("Fire1"))
         {
-            if (rollIndex < rollList.Count)
-            {
-                RollDie(rollList[rollIndex]);
-                rollIndex++;
-            }
-            else
-            {
-                allStoped = true;
-            }
-
-        }
-        else if(Input.GetButtonUp("Fire2"))
-        {
             StartCoroutine(RollMultiDice(rollIndex, rollList.Count));
             rollIndex = rollList.Count;
         }
-        totalValue = 0;
-        coeff = 1;
+
         foreach(GameObject diceObj in diceObjs)
         {
-            diceValue = diceObj.GetComponent<DiceValue>().value;
-            if (diceValue < 0)
-            {
-                coeff = coeff + -diceValue;
-            }
-            else
-            {
-                totalValue += diceValue;
-            }
+            diceValue = diceObj.GetComponent<DiceValue>();
             
-            if (!diceObj.GetComponent<DiceValue>().stoped) allStoped = false;
+            if (diceValue.stoped){
+                dpm.AddDP(diceValue.value);
+                stopDice.Add(diceObj);
+            }
             
         }
-        totalValue = coeff * totalValue;
-
-        if (allStoped)
-        {
-            Debug.Log("stop_"+totalValue + "/" + GetMaxTotalValue());
-            
-            if (!AddSpecialDice())
-            {
-                rollList.Add(0);
-                valTxt.ShowMessage("add d6");
-            }
-            
-
-            ResetDice();
-            allStoped = false;
-            rollIndex = 0;
+        foreach(GameObject stopDie in stopDice){
+            diceObjs.Remove(stopDie);
+            Destroy(stopDie,1.0f);
         }
-
-        Debug.Log(rollIndex + "_" + totalValue);
-
 
 	}
 
-    void RollDie(int type)
+    public GameObject RollDie(int type)
     {
         GameObject die = GameObject.Instantiate(dice[type]) as GameObject;
         Vector2 mousePos = Input.mousePosition;
         Vector2 viewPos = Camera.main.ScreenToViewportPoint(mousePos);
         Vector3 force = new Vector3((viewPos.x - 0.5f) * speed, (viewPos.y - 0.5f)*speed, speed);
-        //Debug.Log(force);
         die.GetComponent<Rigidbody>().AddForce(force);
         die.GetComponent<Rigidbody>().angularVelocity = new Vector3(Random.Range(5, 10), 0, 0);
         die.transform.position = releasePos.position;
         die.transform.rotation = Random.rotation;
-        diceObjs.Add(die);
+
+        return die;
     }
 
     void ResetDice()
@@ -124,9 +93,10 @@ public class RollDice : MonoBehaviour {
     {
         for(int i = start; i < end; i++)
         {
-            RollDie(rollList[i]);
+            diceObjs.Add(RollDie(rollList[i]));
             yield return new WaitForSeconds(0.2f);
         }
+        rollIndex =0;
     }
     public int GetMaxTotalValue()
     {
@@ -175,5 +145,9 @@ public class RollDice : MonoBehaviour {
     public int GetTotalDiceCount()
     {
         return rollList.Count;
+    }
+
+    public void AddRollList(int n){
+            rollList.Add(n);
     }
 }

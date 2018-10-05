@@ -9,7 +9,7 @@ public class ValueText : MonoBehaviour {
     public Text eqText;
     public Text diceCountText;
     public Text IssueText;
-    public Text messageText;
+    //public Text messageText;
 
     public RollDice rollDice;
     public int issue1,issue2;
@@ -17,7 +17,7 @@ public class ValueText : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         rollDice = GameObject.Find("DiceRoller").GetComponent<RollDice>();
-        messageText.enabled = false;
+
         IssueText.text = "=10*n->d10\n" +
             ">=12->d6_456\n" + ">=50->d6_x(+n)\n";
 	}
@@ -36,8 +36,8 @@ public class ValueText : MonoBehaviour {
 
     public void ShowMessage(string message)
     {
-        messageText.enabled = true;
-        messageText.text = message;
+        //messageText.enabled = true;
+        //messageText.text = message;
     }
     
 
